@@ -1,6 +1,7 @@
 package com.prince.finance.finsecure.services;
 
 import com.prince.finance.finsecure.DTO.UserDto;
+import com.prince.finance.finsecure.DTO.UserResponseDto;
 import com.prince.finance.finsecure.entities.User;
 import com.prince.finance.finsecure.enums.Role;
 import com.prince.finance.finsecure.enums.Status;
@@ -10,6 +11,10 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+
+import java.util.ArrayList;
+import java.util.List;
+
 @Slf4j
 @Service
 @RequiredArgsConstructor
@@ -36,5 +41,25 @@ public class UserServicesImpl implements UserServices{
         User result = userRepository.save(newUser);
 
         return result;
+    }
+
+    @Override
+    public List<UserResponseDto> getAllUsers() {
+        log.info("Fetching all users from database...");
+
+        List<User> userList = userRepository.findAll();
+        List<UserResponseDto> user = new ArrayList<>();
+        for(User u : userList)
+        {
+            UserResponseDto dto = new UserResponseDto();
+            dto.setId(u.getId());
+            dto.setUsername(u.getUsername());
+            dto.setEmail(u.getEmail());
+            dto.setRole(u.getRole());
+            dto.setStatus(u.getStatus());
+
+            user.add(dto);
+        }
+        return user;
     }
 }
