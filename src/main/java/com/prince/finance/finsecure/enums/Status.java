@@ -1,5 +1,6 @@
 package com.prince.finance.finsecure.enums;
 
 public enum Status {
-    TRUE,FALSE
+    ACTIVE,
+    INACTIVE
 }

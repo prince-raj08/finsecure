@@ -1,5 +1,6 @@
 package com.prince.finance.finsecure.services;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.prince.finance.finsecure.DTO.UserDto;
 import com.prince.finance.finsecure.DTO.UserResponseDto;
 import com.prince.finance.finsecure.entities.User;
@@ -9,21 +10,24 @@ import com.prince.finance.finsecure.exceptions.CommonExceptions;
 import com.prince.finance.finsecure.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
 
+
 @Slf4j
 @Service
 @RequiredArgsConstructor
 public class UserServicesImpl implements UserServices{
 
+    private final ObjectMapper objectMapper;
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     @Override
-    public User register(UserDto user) {
+    public UserResponseDto register(UserDto user) {
         log.info("Starting registration process for email: {}", user.getEmail());
         if(userRepository.existsByEmail(user.getEmail()))
         {
@@ -35,12 +39,14 @@ public class UserServicesImpl implements UserServices{
         newUser.setUsername(user.getUsername());
         newUser.setPassword(passwordEncoder.encode(user.getPassword()));
         newUser.setRole(user.getRole()!=null?user.getRole():Role.VIEWER);
-        newUser.setStatus(Status.TRUE);
+        newUser.setStatus(Status.ACTIVE);
 
-        log.info("New user created with role :{}", newUser);
         User result = userRepository.save(newUser);
 
-        return result;
+        UserResponseDto response = objectMapper.convertValue(result,UserResponseDto.class);
+        log.info("New user created with role :{}", response);
+
+        return response;
     }
 
     @Override
@@ -61,5 +67,28 @@ public class UserServicesImpl implements UserServices{
             user.add(dto);
         }
         return user;
+    }
+
+    @Override
+    public String updateStatus(Long id, Status status) {
+
+        log.info("Fetching user with ID: {}", id);
+        User user = userRepository.findById(id).orElseThrow(()-> new CommonExceptions("User not found with id :"+id));
+        user.setStatus(status);
+        userRepository.save(user);
+        log.info("User ID: {} status updated to {}", id, status);
+        return "User status updated successfully";
+    }
+
+    @Override
+    public UserResponseDto getMyProfile() {
+        log.info("Authenticating user ");
+        String email = SecurityContextHolder.getContext().getAuthentication().getName();
+
+        User user = userRepository.findByEmail(email).orElseThrow(()-> new CommonExceptions("user not found :"+email));
+        UserResponseDto response = objectMapper.convertValue(user,UserResponseDto.class);
+        log.info("User profile found :{}",response);
+
+        return response;
     }
 }

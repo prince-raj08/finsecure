@@ -3,6 +3,7 @@ package com.prince.finance.finsecure.controller;
 import com.prince.finance.finsecure.DTO.UserDto;
 import com.prince.finance.finsecure.DTO.UserResponseDto;
 import com.prince.finance.finsecure.entities.User;
+import com.prince.finance.finsecure.enums.Status;
 import com.prince.finance.finsecure.services.UserServicesImpl;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -23,10 +24,10 @@ public class UserController {
     private final UserServicesImpl userServices;
 
     @PostMapping("/register")
-    ResponseEntity<User> register(@Valid @RequestBody UserDto user)
+    ResponseEntity<UserResponseDto> register(@Valid @RequestBody UserDto user)
     {
         log.info("Received registration request for: {}",user.getEmail());
-        User response = userServices.register(user);
+        UserResponseDto response = userServices.register(user);
         log.info("User successfully created with ID: {}. Sending response back to client.", response.getId());
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
@@ -43,5 +44,22 @@ public class UserController {
             return ResponseEntity.noContent().build();
         }
         return ResponseEntity.status(HttpStatus.OK).body(result);
+    }
+
+    @PreAuthorize("hasRole('ADMIN')")
+    @PostMapping("/{id}/status")
+    public ResponseEntity<String> updateStatus(@PathVariable Long id, @RequestParam Status status)
+    {
+        log.info("Admin updating status for user ID: {} to {}", id, status);
+        String response = userServices.updateStatus(id,status);
+        return ResponseEntity.status(HttpStatus.OK).body(response);
+    }
+
+
+    @GetMapping("/getProfile")
+    public ResponseEntity<UserResponseDto> getMyProfile() {
+        log.info("Fetching profile for logged-in user");
+        UserResponseDto result = userServices.getMyProfile();
+        return ResponseEntity.ok(result);
     }
 }

@@ -9,8 +9,6 @@ import org.hibernate.validator.constraints.Length;
 
 @Data
 public class UserDto {
-
-    private Long id;
     @NotBlank
     @Length(min=3,max=15,message = "username should be greater than 3 character")
     private String username;

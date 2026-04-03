@@ -1,5 +1,7 @@
 package com.prince.finance.finsecure.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.prince.finance.finsecure.enums.Role;
 import com.prince.finance.finsecure.enums.Status;
 import jakarta.persistence.*;
@@ -7,6 +9,7 @@ import lombok.Data;
 
 import java.util.List;
 
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 @Data
 @Entity
 @Table(name="user")
@@ -29,6 +32,7 @@ public class User {
     @Column(nullable = false)
     private Role role;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Financial_record> financialRecords;
 }
