@@ -4,6 +4,7 @@ import com.prince.finance.finsecure.enums.Category;
 import com.prince.finance.finsecure.enums.Type;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
+import jakarta.validation.constraints.Size;
 import lombok.Data;
 
 import java.math.BigDecimal;
@@ -28,5 +29,6 @@ public class FinancialRecordDto {
     @NotNull(message = "Date is required")
     private LocalDateTime date;
 
+    @Size(max = 255, message = "Note cannot exceed 255 characters")
     private String note;
 }

@@ -1,6 +1,7 @@
 package com.prince.finance.finsecure.security;
 
 import com.prince.finance.finsecure.entities.User;
+import com.prince.finance.finsecure.enums.Status;
 import com.prince.finance.finsecure.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -29,10 +30,17 @@ public class CustomUserDetailsService implements UserDetailsService {
                             "User not found with email: " + email);
                 });
 
+        boolean isLocked = user.getStatus() == Status.INACTIVE;
+
+        if (isLocked) {
+            log.warn("User account is locked: {}", email);
+        }
+
         return org.springframework.security.core.userdetails.User
                 .withUsername(user.getEmail())
                 .password(user.getPassword())
                 .roles(user.getRole().name())
+                .accountLocked(isLocked) // ← Yeh add kiya
                 .build();
     }
 }

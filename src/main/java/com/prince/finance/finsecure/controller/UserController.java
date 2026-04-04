@@ -2,7 +2,6 @@ package com.prince.finance.finsecure.controller;
 
 import com.prince.finance.finsecure.DTO.UserDto;
 import com.prince.finance.finsecure.DTO.UserResponseDto;
-import com.prince.finance.finsecure.entities.User;
 import com.prince.finance.finsecure.enums.Status;
 import com.prince.finance.finsecure.services.UserServicesImpl;
 import jakarta.validation.Valid;
@@ -47,7 +46,7 @@ public class UserController {
     }
 
     @PreAuthorize("hasRole('ADMIN')")
-    @PostMapping("/{id}/status")
+    @PutMapping("/{id}/status")
     public ResponseEntity<String> updateStatus(@PathVariable Long id, @RequestParam Status status)
     {
         log.info("Admin updating status for user ID: {} to {}", id, status);

@@ -37,4 +37,7 @@ public class Financial_record {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="user_id",nullable = false)
     private User user;
+
+    @Column(name = "is_deleted", columnDefinition = "boolean default false")
+    private Boolean deleted = false;
 }

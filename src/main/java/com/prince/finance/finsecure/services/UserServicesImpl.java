@@ -71,7 +71,6 @@ public class UserServicesImpl implements UserServices{
 
     @Override
     public String updateStatus(Long id, Status status) {
-
         log.info("Fetching user with ID: {}", id);
         User user = userRepository.findById(id).orElseThrow(()-> new CommonExceptions("User not found with id :"+id));
         user.setStatus(status);
